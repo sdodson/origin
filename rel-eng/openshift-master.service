@@ -2,6 +2,9 @@
 Description=OpenShift Master
 Documentation=https://github.com/openshift/origin
 After=network.target
+Before=openshift-node.service
+Before=openshift-sdn-node.service
+Before=openshift-sdn-master.service
 Requires=network.target
 
 [Service]
@@ -12,3 +15,6 @@ WorkingDirectory=/var/lib/openshift/
 
 [Install]
 WantedBy=multi-user.target
+RequiredBy=openshift-sdn-node.service
+RequiredBy=openshift-node.service
+RequiredBy=openshift-sdn-master.service
