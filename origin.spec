@@ -23,8 +23,8 @@
 }
 
 %if "%{dist}" == ".el7ose"
-%global package_name atomic-enterprise
-%global product_name Atomic Enterprise
+%global package_name atomic-openshift
+%global product_name Atomic OpenShift
 %else
 %global package_name origin
 %global product_name Origin
@@ -35,7 +35,7 @@ Name:           %{package_name}
 # builders provided in the rel-eng directory of this project
 Version:        0.0.1
 Release:        0%{?dist}
-Summary:        Open Source Platform as a Service by Red Hat
+Summary:        Open Source Container Management by Red Hat
 License:        ASL 2.0
 URL:            https://%{import_path}
 ExclusiveArch:  x86_64
