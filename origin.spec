@@ -144,7 +144,8 @@ do
         go install -ldflags "%{ldflags}" %{import_path}/cmd/${cmd}
 done
 
-# Build only 'openshift' for other platforms
+# Build clients for other platforms
+# TODO: build cmd/oc instead of openshift
 GOOS=windows GOARCH=386 go install -ldflags "%{ldflags}" %{import_path}/cmd/openshift
 GOOS=darwin GOARCH=amd64 go install -ldflags "%{ldflags}" %{import_path}/cmd/openshift
 
@@ -164,13 +165,13 @@ do
   install -p -m 755 _build/bin/${bin} %{buildroot}%{_bindir}/${bin}
 done
 
-# Install 'openshift' as client executable for windows and mac
+# Install client executable for windows and mac
 install -d %{buildroot}%{_datadir}/%{name}/{linux,macosx,windows}
 install -p -m 755 _build/bin/openshift %{buildroot}%{_datadir}/%{name}/linux/oc
 install -p -m 755 _build/bin/darwin_amd64/openshift %{buildroot}/%{_datadir}/%{name}/macosx/oc
 install -p -m 755 _build/bin/windows_386/openshift.exe %{buildroot}/%{_datadir}/%{name}/windows/oc.exe
 
-#Install openshift pod
+#Install pod
 install -p -m 755 images/pod/pod %{buildroot}%{_bindir}/
 
 install -d -m 0755 %{buildroot}%{_unitdir}
@@ -283,10 +284,15 @@ fi
 %ghost %config(noreplace) %{_sysconfdir}/origin/serviceaccounts.public.key
 
 %post master
+# TODO: remove this conditional at a later date
 %systemd_post %{basename:%{name}-master.service}
 # Create master configs if they do not exist
 if [ ! -e %{_sysconfdir}/origin/master/master-config.yaml ]; then
+%if "%{dist}" == ".el7aos"
+  %{_bindir}/atomic-enterprise start master --write-config=%{_sysconfdir}/origin/master
+%else
   %{_bindir}/openshift start master --write-config=%{_sysconfdir}/origin/master
+%endif
 fi
 
 %preun master
